@@ -3,13 +3,18 @@ include(FindAVX)
 add_library(trigdx reference.cpp lookup.cpp)
 
 if(HAVE_AVX)
-    target_compile_definitions(trigdx PUBLIC HAVE_AVX)
-    target_compile_options(trigdx PUBLIC -mavx)
+  target_compile_definitions(trigdx PUBLIC HAVE_AVX)
+  target_compile_options(trigdx PUBLIC -mavx)
 endif()
 
 if(HAVE_AVX2)
-    target_compile_definitions(trigdx PUBLIC HAVE_AVX2)
+  target_compile_definitions(trigdx PUBLIC HAVE_AVX2)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel" OR CMAKE_CXX_COMPILER_ID STREQUAL
+                                               "IntelLLVM")
+    target_compile_options(trigdx PUBLIC -xCORE-AVX2)
+  else()
     target_compile_options(trigdx PUBLIC -mavx2)
+  endif()
 endif()
 
 target_include_directories(trigdx PUBLIC ${PROJECT_SOURCE_DIR}/include)
